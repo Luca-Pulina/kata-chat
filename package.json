@@ -1,0 +1,14 @@
+{
+  "name": "kata-chat",
+  "version": "1.0.0",
+  "description": "split the chat phrases",
+  "main": "index.js",
+  "scripts": {
+    "test": "vitest --run --reporter verbose"
+  },
+  "author": "Luca Pulina",
+  "license": "MIT",
+  "dependencies": {
+    "vitest": "^0.29.3"
+  }
+}
