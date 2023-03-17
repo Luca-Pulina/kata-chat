@@ -1,39 +1,39 @@
+const splitChatKata = (dirtyLines) => {
+    const cleanLines = dirtyLines.replaceAll(/(\d{2}:\d{2}:\d{2}) [a-zA-Z ]+:\s/g, '\n$& ').split("\n").splice(1);
 
-const fs = require('fs')
-const inputFile = 'inputFile.txt'
+    const result = []
+    let customerIdentifier = ""
+    let isFirstLine = true
 
+    cleanLines.forEach(line => {
+        let lineToObj = {
+            date: "",
+            mention: "",
+            sentence: "",
+            type: ""
+        }
+        const lineToArr = line.split(" ")
+        const indexMentionDelimiter = lineToArr.findIndex(element => element === ":")
+        const currentCustomerIdentifier = lineToArr.slice(1, indexMentionDelimiter + 1).join(" ")
 
-const dirtyLines = fs.readFileSync(inputFile, 'utf-8');
-const cleanLines = dirtyLines.replaceAll(/(\d{2}:\d{2}:\d{2}) [a-zA-Z ]+:\s/g, '\n$& ').split("\n").splice(1);
+        if (isFirstLine) customerIdentifier = currentCustomerIdentifier
 
-const result = []
-let customerIdentifier = ""
-let isFirstLine = true
+        isFirstLine = false
 
-cleanLines.forEach(line => {
-    let lineToObj = {
-        date: "",
-        mention: "",
-        sentence: "",
-        type: ""
-    }
-    const lineToArr = line.split(" ")
-    const indexMentionDelimiter = lineToArr.findIndex(element => element === ":")
+        lineToObj.date = lineToArr[0]
+        lineToObj.mention = `${lineToArr.slice(0, indexMentionDelimiter + 1).join(" ")} `
+        lineToObj.sentence = lineToArr.slice(indexMentionDelimiter + 1).join(" ").trim()
+        lineToObj.type = currentCustomerIdentifier === customerIdentifier ? 'customer' : 'agent'
 
-    if (isFirstLine) customerIdentifier = lineToArr.slice(1, indexMentionDelimiter+1).join(" ")
+        noEmptyField(lineToObj) && result.push(lineToObj)
+    })
 
- 
-    isFirstLine = false
+    return result
+}
 
-    lineToObj.date = lineToArr[0]
-    lineToObj.mention = `${lineToArr.slice(0, indexMentionDelimiter + 1).join(" ")} `
-    lineToObj.sentence = lineToArr.slice(indexMentionDelimiter + 1).join(" ")
-    lineToObj.type = lineToArr.slice(1, indexMentionDelimiter+1).join(" ") === customerIdentifier ? 'customer' : 'agent'
+// soft validation
+const noEmptyField = (lineToObj) => {
+    return !!lineToObj.date && !!lineToObj.mention && !!lineToObj.sentence && !!lineToObj.type
+}
 
-    lineToObj.date && result.push(lineToObj)
-})
-
-console.log(result)
-
-
-
+module.exports = splitChatKata
